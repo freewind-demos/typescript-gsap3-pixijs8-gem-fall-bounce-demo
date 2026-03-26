@@ -1,0 +1,23 @@
+{
+  "name": "typescript-gsap3-pixijs8-gem-fall-bounce-demo",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "gsap": "^3.12.5",
+    "pixi.js": "^8.6.6"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.0",
+    "vite": "^5.4.0"
+  },
+  "description": "本 Demo 演示如何使用 GSAP3 的弹性缓动和 PixiJS8 创建宝石下落后带 Bounce 效果动画。",
+  "main": "index.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
