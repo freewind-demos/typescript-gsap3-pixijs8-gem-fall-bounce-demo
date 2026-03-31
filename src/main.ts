@@ -40,70 +40,64 @@ class Gem {
   }
 }
 
-// 初始化 PixiJS
-const app = new Application()
-await app.init({
-  width: window.innerWidth,
-  height: window.innerHeight,
-  backgroundColor: 0x1a1a2e,
-  antialias: true,
-  resolution: window.devicePixelRatio || 1,
-  autoDensity: true,
-})
-document.body.appendChild(app.canvas as HTMLCanvasElement)
+async function main() {
+  const app = new Application()
+  await app.init({
+    width: window.innerWidth,
+    height: window.innerHeight,
+    backgroundColor: 0x1a1a2e,
+    antialias: true,
+    resolution: window.devicePixelRatio || 1,
+    autoDensity: true,
+  })
+  document.body.appendChild(app.canvas as HTMLCanvasElement)
 
-// 宝石颜色
-const colors = [0xff6b6b, 0x4ecdc4, 0xffe66d, 0x95e1d3, 0xf38181, 0xaa96da]
-const gems: Gem[] = []
-const groundY = window.innerHeight - 100
+  const colors = [0xff6b6b, 0x4ecdc4, 0xffe66d, 0x95e1d3, 0xf38181, 0xaa96da]
+  const gems: Gem[] = []
+  const groundY = window.innerHeight - 100
 
-// 创建多颗宝石
-for (let i = 0; i < 6; i++) {
-  const x = 100 + i * 120
-  const y = -100 - i * 80
-  const color = colors[i % colors.length]
-  const gem = new Gem(x, y, 30, color)
-  gems.push(gem)
-  app.stage.addChild(gem.graphic)
-}
+  for (let i = 0; i < 6; i++) {
+    const x = 100 + i * 120
+    const y = -100 - i * 80
+    const color = colors[i % colors.length]
+    const gem = new Gem(x, y, 30, color)
+    gems.push(gem)
+    app.stage.addChild(gem.graphic)
+  }
 
-// 绘制地面
-const ground = new Graphics()
-ground.rect(0, groundY, window.innerWidth, 10)
-ground.fill({ color: 0x4a4a6a })
-app.stage.addChild(ground)
+  const ground = new Graphics()
+  ground.rect(0, groundY, window.innerWidth, 10)
+  ground.fill({ color: 0x4a4a6a })
+  app.stage.addChild(ground)
 
-// 使用 GSAP3 让宝石逐个下落并弹跳
-function animateGems() {
-  gems.forEach((gem, index) => {
-    // 使用 elastic.out 缓动实现弹跳效果
-    gsap.to(gem.graphic, {
-      y: groundY - gem.size,
-      duration: 1.2,
-      ease: 'elastic.out(1, 0.4)',
-      delay: index * 0.15,
-      onComplete: () => {
-        // 弹跳完成后，给一个轻微的上下颤动效果
-        gsap.to(gem.graphic, {
-          y: groundY - gem.size - 5,
-          duration: 0.15,
-          yoyo: true,
-          repeat: 3,
-          ease: 'power1.inOut'
-        })
-      }
+  function animateGems() {
+    gems.forEach((gem, index) => {
+      gsap.to(gem.graphic, {
+        y: groundY - gem.size,
+        duration: 1.2,
+        ease: 'elastic.out(1, 0.4)',
+        delay: index * 0.15,
+        onComplete: () => {
+          gsap.to(gem.graphic, {
+            y: groundY - gem.size - 5,
+            duration: 0.15,
+            yoyo: true,
+            repeat: 3,
+            ease: 'power1.inOut',
+          })
+        },
+      })
     })
+  }
+
+  app.canvas.addEventListener('click', () => {
+    gems.forEach((gem, index) => {
+      gem.graphic.y = -100 - index * 80
+    })
+    animateGems()
   })
+
+  animateGems()
 }
 
-// 点击画面重新播放动画
-app.canvas.addEventListener('click', () => {
-  // 先重置所有宝石位置
-  gems.forEach((gem, index) => {
-    gem.graphic.y = -100 - index * 80
-  })
-  animateGems()
-})
-
-// 启动动画
-animateGems()
+main().catch(console.error)
